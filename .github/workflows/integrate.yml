@@ -1,0 +1,17 @@
+name: SchoolSoft API CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test_push_request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - run: pip install -r requirements.txt
+      - run: python3 test.py

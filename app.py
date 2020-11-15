@@ -86,8 +86,24 @@ class Lunch(Resource):
             return jsonify(response)
 
 
+class Root(Resource):
+    def get(self):
+        return jsonify({
+            'developer': 'https://github.com/simple-max',
+            'version': 'v1',
+            'availablePath': ['lunch', 'schedule'],
+            'queryParameters': [
+                {'example': 'v1/schedule/class?day=monday',
+                 'description': 'returns all the subject of that day', 'parameterType': 'string<day>'},
+                {'example': 'v1/schedule/class?today=true',
+                 'description': 'returns the current day subjectsy', 'parameterType': 'string<day>'}
+            ]
+        })
+
+
 api.add_resource(Schedule, '/v1/schedule/<string:id>')
 api.add_resource(Lunch, '/v1/lunch')
+api.add_resource(Root, '/')
 
 if __name__ == "__main__":
     app.run(debug=True)
