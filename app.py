@@ -1,5 +1,6 @@
 # Using flask to make an api
 # import necessary libraries and functions
+from sys import argv
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 
@@ -19,6 +20,7 @@ class Schedule(Resource):
         today = (int(strftime("%w", gmtime())) - 1)
         args = request.args
         data = []
+        days = []
         print(args.get('day'))
         if args.get('day'):
             queryDay = list(calendar.day_name).index(
@@ -61,20 +63,27 @@ class Schedule(Resource):
                 response = SchoolSoft(
                     'matin.akbari', 'HP@NTI5379902').schedule(classID(id))
 
-                for index in range(4):
-                    for block in response[index].schedule:
+                for day in range(5):
+                    for block in response[day].schedule:
                         if not block.is_break:
                             location = str(block.location).replace('\r\n', ' ')
-                            data.append(
-                                {'subject': block.subject, 'time': block.time, 'location': location})
+                            data.append({'subject': block.subject, 'time': block.time,
+                                         'location': location, 'day': calendar.day_name[day]})
 
                 return jsonify(data)
 
 
 class Lunch(Resource):
     def get(self):
-        response = SchoolSoft('matin.akbari', 'HP@NTI5379902').lunch()
-        return jsonify(response)
+        args = request.args
+        week = args.get('week')
+        if args.get('week'):
+            response = SchoolSoft(
+                'matin.akbari', 'HP@NTI5379902').lunch(week)
+            return jsonify(response)
+        else:
+            response = SchoolSoft('matin.akbari', 'HP@NTI5379902').lunch(-1)
+            return jsonify(response)
 
 
 api.add_resource(Schedule, '/v1/schedule/<string:id>')

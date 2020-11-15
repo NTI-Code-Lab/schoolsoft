@@ -172,13 +172,14 @@ class SchoolSoft(object):
 
         return sortedSchedule
 
-    def lunch(self) -> list:
+    def lunch(self, week: int) -> list:
         """
         Fetches the lunch menu for the entire week
         Returns an ordered list with days going from index 0-4
         This list contains all the food on that day
         """
-        url = 'https://sms.schoolsoft.se/nti/jsp/student/right_student_lunchmenu.jsp?menu=lunchmenu'
+
+        url = f'https://sms.schoolsoft.se/nti/jsp/student/right_student_lunchmenu.jsp?menu=lunchmenu?requestid={week}'
         response = self.get(url)
         menu = BeautifulSoup(response, "html.parser")
 
