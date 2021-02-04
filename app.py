@@ -83,26 +83,40 @@ class Lunch(Resource):
             return jsonify(response)
         else:
             response = SchoolSoft('matin.akbari', 'HP@NTI5379902').lunch(-1)
-            return jsonify(response)
+            days = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+            data = []
+            for day in range(0, 5):
+                try:
+                    if len(response[day]) != 2:
+                        data.append({"day": days[day], "food": {
+                                    "one": response[day][0]}})
+                    else:
+                        data.append(
+                            {"day": days[day], "food": {
+                                "one": response[day][0], "two": response[day][1]}}
+                        )
+                except Exception as e:
+                    print(e)
+            return jsonify(data)
 
 
 class Root(Resource):
     def get(self):
         return jsonify({
             'developer': 'https://github.com/simple-max',
-            'version': 'v1',
+            'version': 'v2',
             'availablePath': ['lunch', 'schedule'],
             'queryParameters': [
-                {'example': 'v1/schedule/class?day=monday',
+                {'example': 'v2/schedule/class?day=monday',
                  'description': 'returns all the subject of that day', 'parameterType': 'string<day>'},
-                {'example': 'v1/schedule/class?today=true',
+                {'example': 'v2/schedule/class?today=true',
                  'description': 'returns the current day subjectsy', 'parameterType': 'string<day>'}
             ]
         })
 
 
-api.add_resource(Schedule, '/v1/schedule/<string:id>')
-api.add_resource(Lunch, '/v1/lunch')
+api.add_resource(Schedule, '/v2/schedule/<string:id>')
+api.add_resource(Lunch, '/v2/lunch')
 api.add_resource(Root, '/')
 
 if __name__ == "__main__":
