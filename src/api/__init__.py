@@ -2,6 +2,8 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from time import gmtime, strftime
+import re
+import json
 
 
 class AuthFailure(Exception):
@@ -191,7 +193,46 @@ class SchoolSoft(object):
 
         return lunch_menu
 
+    def contactlist(self) -> list:
+        url = f'https://sms.schoolsoft.se/nti/jsp/student/right_student_staff.jsp?menu=contactlist'
+        response = self.get(url)
+        soup = BeautifulSoup(response, "html.parser")
 
+        contacts = {}
+        try:
+            tables = soup.find_all("table", "table table-striped")
+            for tableIndex, table in enumerate(tables):
+                for tr in tables[tableIndex].find_all("tr")[2:]:
+                    tds = tr.find_all('td')
+                    contacts[tds[0].text] = {
+                        "name": tds[0].text,
+                        "role": tds[1].text,
+                        "phone": tds[2].text,
+                        "email": tds[3].text,
+                        "image": tds[5].img['src'] if tds[5].img else "",
+                    }
+
+            # print(contacts)
+            # print(json.dumps(json.loads(contacts),  indent=4))
+            return contacts
+        except Exception as e:
+            print(e)
+
+        '''for tr in soup.find_all("tr")[2:]:
+            tds = tr.find_all('td')
+            try:
+                print(tds)
+                text = tds[0].text.strip()
+                if not re.search(r"^\s+$", text):
+                    print(f"name: {tds[0].text}")
+                    print(f"role: {tds[1].text}")
+                    #print(f"number: {tds[2].text}")
+                    print(f"email: {tds[3].text}")
+                else:
+                    pass
+            except Exception as e:
+                print(e)'''
+        #print(f"pic: {tds[5].herf}")
 # test = SchoolSoft('matin.akbari', 'HP@NTI5379902')
 # x = test.schedule('TE18')
 
